@@ -3,7 +3,7 @@ Self-Taught Medical Imaging (MI), Web base learning, quiz, and medical image sto
 
 ## Installation step
 * git clone https://github.com/taiaburbd/Self_Taught_Mi.git
-* pip install flask
+* pip install -r requirements.txt   
 * flask run
 
 

@@ -1,29 +1,23 @@
 import datetime
 import sqlite3
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+
 
 app = Flask(__name__)
+app.secret_key = '*z*3$ufo0i=fg+7el)7tcrpzgxa=qvins6p2(ni0x8x@k7)8e'
 
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
 
-@app.route('/')
-def hello():
-    conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
-    conn.close()
-    return render_template('index.html', posts=posts, utc_dt=datetime.datetime.utcnow())
-@app.route('/about/')
-def about():
-    return render_template('about.html')
-@app.route('/comments/')
-def comments():
-    comments = ['This is the first comment.',
-                'This is the second comment.',
-                'This is the third comment.',
-                'This is the fourth comment.'
-                ]
 
-    return render_template('comments.html', comments=comments)
+app.config['MAIL_SERVER'] = 'smtp.google.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = ''
+app.config['MAIL_PASSWORD'] = ''
+
+from admin import * 
+from views import * 
+
+if __name__ == '__main__':
+    # app.run(debug=True)
+    app.run(host='192.168.95.41', port=5500, debug=True)
+

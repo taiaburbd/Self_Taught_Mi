@@ -1,0 +1,51 @@
+{% extends 'admin_template.html' %}
+{% block content %}
+<div class="section">
+<h1 class="mt-4">Users Management</h1>
+
+                <h2>Users List</h2>
+                <table id="pagination-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>User Full Name</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in data %}
+                        <tr>
+                            <td>{{ user.fullname }}</td>
+                            <td>{{ user["username"] }}</td>
+                            <td>
+                                {% if user["isadmin"] == 1 %}
+                                Admin
+                                {% else %}
+                                    User
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user["isadmin"] == 1 %}
+                                <a href="/admin_change_user_status/{{ user["id"]}}/0">
+                                    <button class="btn btn-primary btn-sm">Make User</button>
+                                </a>
+                                {% else %}
+                                <a href='/admin_change_user_status/{{ user["id"] }}/1'>
+                                    <button class="btn btn-primary btn-sm">Make Admin</button>
+                                    
+                                </a>
+                                <a href='/admin_user_delete/{{ user["id"] }}'>
+                                    <button class="btn btn-danger btn-sm" onClick="confirm('Delete entry?')">Remove User</button>
+                                </a>
+                                {% endif %}
+                                
+                               </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- Add more rows for additional users -->
+                    </tbody>
+                </table>
+   
+</div>
+{% endblock %}

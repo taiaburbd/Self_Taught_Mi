@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- ***** Main Banner Area Start ***** -->
+    <div class="main-banner" id="top" style="height: 300px;">
+  <br>
+  <br>
+  <br>
+  <br>
+    </div>
+    <section class="section" id="signup">
+        <div class="container">
+            <div class="row">
+                <div class=" col-lg-12">
+                    <div class="jumbotron">
+                        <h3 class="title">Login</h3>
+                        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+                            {% if messages %}
+                            <div class="alert alert-danger" role="alert">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                            {% if messages %}
+                            <div class="alert alert-success" role="alert">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+
+                    <div class="box">
+                        <form action="{{ url_for('login') }}" method="POST" >
+                            <div class="field">
+                                <div class="control">
+                                    <label for="email">Group Email/ Person Email:</label>
+                                    <br>
+                                    <input class="input" type="email" name="username" placeholder="Your Email" autofocus="">
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <label for="password">Password:</label>
+                                    <br>
+                                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
+                                </div>
+                            </div>
+                            <button type="submit" class="button is-block is-info is-large is-fullwidth btn btn-info" >Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

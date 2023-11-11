@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+            {% block title %}Register - My App{% endblock %}
+            {% block header %}Register{% endblock %}
+            
+                {% block content %}
+                <section class="section" id="signup">
+                    <div class="container">
+                        <div class="row">
+                            <div class=" col-lg-12">
+                                <div class="jumbotron">
+                    <h1>Register</h1>
+                        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+                            {% if messages %}
+                            <div class="alert alert-danger" role="alert">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                            {% if messages %}
+                            <div class="alert alert-success" role="alert">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    
+                    
+                        <form action="{{ url_for('register') }}" method="POST">
+                            <label for="name">Group Name / Person Name:</label>
+                            <br>
+                        <input type="text" name="fullname" id="name" required>
+                        <br><br>
+
+                        <label for="username">Group Email/ Person Email:</label>
+                        <br>
+                        <input type="email" name="username" id="username" required>
+                        <br><br>
+
+                        <label for="password">Password:</label>
+                        <br>
+                        <input type="password" name="password" id="password" required>
+                        <br><br>
+
+                        <button type="submit" class="btn btn-info">Register</button>
+                    </form>
+
+                <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+            {% endblock %}
+
+

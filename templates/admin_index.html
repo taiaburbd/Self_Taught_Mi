@@ -1,0 +1,60 @@
+{% extends 'admin_template.html' %}
+{% block content %}
+        <div class="section">
+            <h1 class="mt-4">Simple Dashboard</h1>
+            <div class="row">
+                <div class="col-md-6 mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Plotly graph goes here -->
+                            <div id="plotly-graph"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section" id="label-section">
+            <h2>Label Section</h2>
+            <p>This is the label section with some demo text.</p>
+        </div>
+        <div class="section" id="tutorial-section">
+            <h2>Tutorial Section</h2>
+            <p>This is the tutorial section with some demo text.</p>
+        </div>
+        <div class="section" id="question-section">
+            <h2>Question Section</h2>
+            <p>This is the question section with some demo text.</p>
+        </div>
+        <div class="section" id="evaluation-section">
+            <h2>Evaluation Section</h2>
+            <p>This is the evaluation section with some demo text.</p>
+        </div>
+        <div class="section" id="images-section">
+            <h2>Images Section</h2>
+            <p>This is the images section with some demo text.</p>
+        </div>
+        <div class="section" id="users-section">
+            <h2>Users Manage Section</h2>
+            <p>This is the users manage section with some demo text.</p>
+        </div>
+        <!-- Plotly JS -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Your JavaScript code for the graph (e.g., using Plotly) -->
+    <script>
+        // Sample data for the graph
+        var data = [
+            {
+                x: [1, 2, 3, 4, 5],
+                y: [10, 11, 12, 13, 14],
+                type: 'scatter'
+            }
+        ];
+
+        // Layout configuration for the graph
+        var layout = {
+            title: 'Sample Graph'
+        };
+
+        Plotly.newPlot('plotly-graph', data, layout);
+    </script>
+        {% endblock %}

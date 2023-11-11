@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap" rel="stylesheet">
 
-    <title>{% block title %} {% endblock %} - FlaskApp</title>
+    <title>{% block title %} {% endblock %} SELF TAUGHT MI</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='assets/css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='assets/css/font-awesome.css') }}">
@@ -41,16 +41,19 @@
                     <div class="col-12">
                         <nav class="main-nav">
                             <!-- ***** Logo Start ***** -->
-                            <a href="index.html" class="logo">Self Taught<em> Mi</em></a>
+                            <a href="/" class="logo">Self Taught<em> Mi</em></a>
                             <!-- ***** Logo End ***** -->
                             <!-- ***** Menu Start ***** -->
                             <ul class="nav">
-                                <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-                                <li class="scroll-to-section"><a href="#features">Learn</a></li>
-                                <li class="scroll-to-section"><a href="#our-classes">Classes</a></li>
-                                <li class="scroll-to-section"><a href="#schedule">Schedules</a></li>
-                                <li class="scroll-to-section"><a href="#contact-us">Contact</a></li> 
-                                <li class="main-button"><a href="#">Sign Up</a></li>
+                                <li class="scroll-to-section"><a href="/" class="active">Home</a></li>
+                                <li class="scroll-to-section"><a href="/tutorial">Learn</a></li>
+                                <li class="scroll-to-section"><a href="/exam">Exam</a></li>
+                                <li class="scroll-to-section"><a href="/mi">Mi</a></li>
+                                {% if 'user_id' in session %}
+                                  <li class="main-button"><a href="/profile">{% print(session['user_fullname']) %} Profile</a></li>
+                                {% else %}
+                                  <li class="main-button"><a href="/register#signup">Sign Up</a></li>
+                                {% endif %}
                             </ul>        
                             <a class='menu-trigger'>
                                 <span>Menu</span>
@@ -65,53 +68,71 @@
 
         {% block content %} {% endblock %}
     
-    <!-- ***** Contact Us Area Starts ***** -->
-    <section class="section" id="contact-us">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div id="map">
-                      <iframe src="https://maps.google.com/maps?q=Av.+L%C3%BAcio+Costa,+Rio+de+Janeiro+-+RJ,+Brazil&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="600px" frameborder="0" style="border:0" allowfullscreen></iframe>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6 col-xs-12">
-                    <div class="contact-form">
-                        <form id="contact" action="" method="post">
-                          <div class="row">
-                            <div class="col-md-6 col-sm-12">
-                              <fieldset>
-                                <input name="name" type="text" id="name" placeholder="Your Name*" required="">
-                              </fieldset>
-                            </div>
-                            <div class="col-md-6 col-sm-12">
-                              <fieldset>
-                                <input name="email" type="text" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your Email*" required="">
-                              </fieldset>
-                            </div>
-                            <div class="col-md-12 col-sm-12">
-                              <fieldset>
-                                <input name="subject" type="text" id="subject" placeholder="Subject">
-                              </fieldset>
-                            </div>
-                            <div class="col-lg-12">
-                              <fieldset>
-                                <textarea name="message" rows="6" id="message" placeholder="Message" required=""></textarea>
-                              </fieldset>
-                            </div>
-                            <div class="col-lg-12">
-                              <fieldset>
-                                <button type="submit" id="form-submit" class="main-button">Send Message</button>
-                              </fieldset>
-                            </div>
-                          </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ***** Contact Us Area Ends ***** -->
-    
+    <!-- ***** Testimonials Starts ***** -->
+    <section class="section" id="trainers">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-6 offset-lg-3">
+                  <div class="section-heading">
+                      <h2>Valuable <em>Feedback</em></h2>
+                      <img src="assets/images/line-dec.png" alt="">
+                      <p>Nunc urna sem, laoreet ut metus id, aliquet consequat magna. Sed viverra ipsum dolor, ultricies fermentum massa consequat eu.</p>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-lg-4">
+                  <div class="trainer-item">
+                      <div class="image-thumb">
+                          <img src="assets/images/third-trainer.jpg" alt="">
+                      </div>
+                      <div class="down-content">
+                          <span>Medical Imaging Specialist</span>
+                          <h4>Frederik Hartmann</h4>
+                          <p>I did not catch the benefit of working in a group in the presentation. To me, it seems like an individual task. Maybe allow or encourage you to talk to your neighbour instead.
+                               It might be challenging and time-consuming to develop a website. Additionally, it might be beneficial to use an existing image viewer to connect the learned information to what will be used at a later point. The downside is that it is not an all-in-one solution and might feel like recreating clicks if existing software is used..</p>
+                          
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-4">
+                  <div class="trainer-item">
+                      <div class="image-thumb">
+                          <img src="assets/images/first-trainer.jpg" alt="">
+                      </div>
+                      <div class="down-content">
+                          <span>Medical Imaging Specialist</span>
+                          <h4>Enrico Castrechini</h4>
+                          <p>Your ideas for the Self-Taught Medical Imaging web application are commendable.
+                              It's evident that a lot of thought has gone into the content and tasks, making them
+                              both valid and creative. The concept of using this platform to understand the
+                              anatomy of medical images and learn about medical imaging is a valuable one. Keep
+                              up the good work!.</p>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-4">
+                  <div class="trainer-item">
+                      <div class="image-thumb">
+                          <img src="assets/images/second-trainer.jpg" alt="">
+                      </div>
+                      <div class="down-content">
+                          <span>Medical Imaging Specialist</span>
+                          <h4>Arnau Farré Melero</h4>
+                          <p>I think your idea is really challenging but at the same time feasible and for sure the
+                              final result might be really helpful for all the people working or studying in topics
+                              related to medical imaging. In my opinion, you correctly chose the three areas needed
+                              for ‘fast learning’ (learn, visualize and test), and I would emphasize the visualization
+                              phase as I think it is the key part in understanding medical images.</p>
+                          
+                      </div>
+                  </div>
+              </div>
+              
+          </div>
+      </div>
+  </section>
+  <!-- ***** Testimonials Ends ***** -->
     <!-- ***** Footer Start ***** -->
     <footer>
         <div class="container">

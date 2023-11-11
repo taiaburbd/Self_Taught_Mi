@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- ***** Our Classes Start ***** -->
+    <section class="section" id="our-classes">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>Mi <em>{{name}}</em></h2>
+                        <!-- <img src="assets/images/line-dec.png" alt=""> -->
+                        <p>These images help healthcare professionals in diagnosing and treating various medical conditions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tabs">
+              <div class="col-lg-4">
+                <ul>
+                    {{ count(categories)}}
+                    {% for cat in categories %}
+                        <li><a href=''><img src="assets/images/tabs-first-icon.png" alt=""></a></li>
+                    {% endfor %}
+                </ul>
+              </div>
+              <div class="col-lg-8">
+                <section class='tabs-content'>
+                        <article >
+                            {% for post in levels %}
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>{{post.title}}</h4>
+                                    <strong>{{post.description}}</strong>
+                                    <p>{{post.details}}</p>
+                                </div>
+                            </div> 
+                            {% endfor %}
+                        </article>
+                </section>
+              </div>
+            </div>
+        </div>
+    </section>
+    <!-- ***** Our Classes End ***** -->
+    
+    {% endblock %}

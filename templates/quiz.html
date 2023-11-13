@@ -1,0 +1,160 @@
+{% extends 'base.html' %} {% block content %} {% set new_level = level|int + 1
+%}
+<!-- ***** Our Classes Start ***** -->
+<section class="section" id="our-classes">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3">
+        <div class="section-heading">
+          <h2>Quiz <em>{{name}}</em></h2>
+          <!-- <img src="assets/images/line-dec.png" alt=""> -->
+          <p>
+            These images help healthcare professionals in diagnosing and
+            treating various medical conditions.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="tabs">
+      <form
+        action="{{url_for('quiz', name=name,level=new_level)}}"
+        id="frmQuiz"
+        method="post"
+        onsubmit="return validateForm()"
+      >
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <section class="tabs-content">
+            <article>
+              <div class="card">
+                <div class="card-body">
+                  <h4>Level {{level}}</h4>
+                  <p>Total Time Duration: 3 minutes</p>
+                  <!-- <h2 class="alert alert-success">Remaining Time: <span class="text text-danger font-weight-bold countdown"></span>minutes</h2> -->
+
+                  <audio
+                    id="beepAudio"
+                    src="{{ url_for('static',filename='assets/mp3/beep-02.mp3') }}"
+                  ></audio>
+                </div>
+              </div>
+
+              {% for question in questions %}
+              <div class="card">
+                <div class="card-body">
+                  <strong
+                    >Question {{loop.index}}/5: {{question.question}}</strong
+                  ><br />
+                  <label>
+                    <input
+                      type="radio"
+                      name="{{question.id}}"
+                      value="{{question.option1}}"
+                      required
+                    />
+                    {{ question.option1 }} </label
+                  ><br />
+                  <label>
+                    <input
+                      type="radio"
+                      name="{{question.id}}"
+                      value="{{question.option2}}"
+                      required
+                    />
+                    {{ question.option2 }} </label
+                  ><br />
+                  <label>
+                    <input
+                      type="radio"
+                      name="{{question.id}}"
+                      value="{{question.option3}}"
+                      required
+                    />
+                    {{ question.option3 }} </label
+                  ><br />
+                  <label>
+                    <input
+                      type="radio"
+                      name="{{question.id}}"
+                      value="{{question.option4}}"
+                      required
+                    />
+                    {{ question.option4 }} </label
+                  ><br />
+                  <p>question set up by: {{ question.created_by }} </p>
+                </div>
+              </div>
+              {% endfor %}
+              <input type="hidden" name="level" value="{{ level }}" />
+              <div class="card">
+                <div class="card-body">
+                  <p>
+                    Note: Ensure that you manage your time wisely as the total
+                    time for the quiz is 3 minutes.
+
+                    <strong>Good luck!</strong>
+                  </p>
+                </div>
+              </div>
+            </article>
+          </section>
+        </div>
+        <div class="col-lg-12" style="text-align: center">
+          <div class="main-button scroll-to-section">
+            <button type="submit" class="btn btn-success">
+              Submit {% if level|int != 5 %} & Next Level {% endif %}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Fixed button -->
+  <button
+    type="button"
+    class="btn btn-danger btn-lg fixed-button"
+    id="countdown"
+  ></button>
+</section>
+<!-- ***** Our Classes End ***** -->
+<script>
+  // Use let instead of const for variables that will be reassigned
+  let countdownDuration = 180; // 3 minutes
+
+  const countdownElement = document.getElementById("countdown");
+  const form = document.getElementById("frmQuiz");
+  const beepAudio = document.getElementById("beepAudio");
+
+  function updateCountdown() {
+    const minutes = Math.floor(countdownDuration / 60);
+    const seconds = countdownDuration % 60;
+
+    countdownElement.textContent = ` ${minutes}:${seconds} `;
+
+    if (countdownDuration <= 0) {
+      clearInterval(interval);
+      countdownElement.textContent = "Time's up!";
+      form.submit();
+    } else {
+      if (countdownDuration < 20) {
+        beepAudio.play().catch((error) => {
+          console.error("Play failed:", error.message);
+        });
+        beepAudio.play();
+        console.log(countdownDuration);
+      }
+      countdownDuration--;
+    }
+  }
+  const interval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+</script>
+
+<style>
+  .fixed-button {
+    position: fixed;
+    bottom: 20px; /* Adjust the distance from the bottom as needed */
+    right: 20px; /* Adjust the distance from the right as needed */
+  }
+</style>
+{% endblock %}

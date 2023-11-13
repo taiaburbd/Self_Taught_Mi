@@ -16,15 +16,9 @@
                 </div>
             </div>
             <div class="row" id="tabs">
-              <div class="col-lg-4">
-                <ul>
-                    {{ count(categories)}}
-                    {% for cat in categories %}
-                        <li><a href=''><img src="assets/images/tabs-first-icon.png" alt=""></a></li>
-                    {% endfor %}
-                </ul>
+              <div class="col-lg-1">
               </div>
-              <div class="col-lg-8">
+              <div class="col-lg-10">
                 <section class='tabs-content'>
                         <article >
                             {% for post in levels %}
@@ -38,6 +32,16 @@
                             {% endfor %}
                         </article>
                 </section>
+              </div>
+              <div class="col-lg-12" style="text-align: center;">
+                <a href="/tutorial"><button class="btn btn-warning">Back to Learn</button></a>
+                <a href="{{url_for('test_mi', category=name)}}"><button class="btn btn-warning">Quiz Start</button></a>
+                <!-- <div class="main-button scroll-to-section">
+                   Back to Learn</a>
+                </div>
+                <div class="main-button scroll-to-section">
+                    Quiz Start</a>
+                </div> -->
               </div>
             </div>
         </div>

@@ -1,0 +1,70 @@
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- ***** Our Classes Start ***** -->
+    <section class="section" id="our-classes">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>Mi <em>{{name}}</em>Test</h2>
+                        <!-- <img src="assets/images/line-dec.png" alt=""> -->
+                        <p>These images help healthcare professionals in diagnosing and treating various medical conditions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tabs">
+              <div class="col-lg-1">
+              </div>
+              <div class="col-lg-10">
+                <section class='tabs-content'>
+                    <article >
+                        <div class="card">
+                            <div class="card-body">
+                                <h4>Quiz Overview</h4>
+                                <p>This is an example structure for a quiz with five levels (1 to 5), a total time duration of 15 minutes, and a total of 25 questions. Each level has 5 questions.                                </p>
+                                <p>Total Time Duration: 15 minutes<br>
+                                Total Questions: 25</p>
+                                </div>
+                                </div>
+                                </article>
+                                <article >
+                                    
+                                {% for step in steps %}
+                                <div class="card col-md-4 float-left">
+                                    <div class="card-body">
+                                        <strong>Level {{loop.index}}</strong>
+                                        <p>Number of Questions: 5<br>
+                                        Time Allocation: 3 minute<br>
+                                        Difficulty: {{step}}</p>
+                                    </div>
+                                </div> 
+                                {% endfor %}
+                                <div class="card col-md-4 float-left">
+                                    <div class="card-body">
+                                    <p>Note: Ensure that you manage your time wisely as the total time for the quiz is 15 minutes.
+                                    
+                                    <strong>Good luck!</strong></p>
+                                </div>
+                                </div> 
+
+                            
+                    </article>
+
+                </section>
+              </div>
+              <div class="col-lg-12" style="text-align: center;">
+                <div class="main-button scroll-to-section">
+                    <a href="{{url_for('quiz', name=name,level=1)}}" onclick="return confirm('Are you sure? you want start Quiz Session?');"> Quiz Start</a>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+    <!-- ***** Our Classes End ***** -->
+    
+    {% endblock %}

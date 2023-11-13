@@ -6,6 +6,7 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mail import Mail, Message
 from app import app
+import secrets
 
 mail = Mail(app)
 
@@ -26,7 +27,7 @@ def hello():
 def tutorial():
     
     conn = get_db_connection()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
+    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ORDER BY category_id ASC')
     categories = category_cursor.fetchall()    
     conn.close()
 
@@ -34,17 +35,120 @@ def tutorial():
 
 
 @app.route('/tuto',defaults={'name':"MRI"})
-@app.route('/tuto/<name>')
 def tuto(name):
     name = request.args.get('category')
     conn = get_db_connection()
     levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
     levels=levels_cursor.fetchall()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
+    category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
     categories = category_cursor.fetchall()    
     conn.close()
 
     return render_template('tuto.html',name=name,levels=levels,categories=categories)
+
+
+@app.route('/test')
+def testarea():
+    conn = get_db_connection()
+    category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
+    categories = category_cursor.fetchall()    
+    conn.close()
+
+    return render_template('test.html',categories=categories)
+
+@app.route('/test_mi',defaults={'name':"MRI"})
+def test_mi(name):
+    name = request.args.get('category')
+    conn = get_db_connection()
+    levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
+    levels=levels_cursor.fetchall()
+    category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
+    categories = category_cursor.fetchall()    
+    steps=['Easy','Moderate','Challenging','Difficult','Expert']
+    conn.close()
+
+    return render_template('test_mi.html',name=name,levels=levels,categories=categories,steps=steps)
+
+# @app.before_request
+# def go_to_login():
+#     if not is_login():
+#         return redirect(url_for('hello'))
+    
+@app.route('/quiz',methods=['GET', 'POST'])
+def quiz():
+    name = request.args.get('name')
+    level = request.args.get('level')
+    level = int(level)
+    level_title = make_level_title(level)
+    # generate exam id 
+    if 'quiz_id' not in session:
+        session['quiz_id'] = secrets.token_urlsafe(12)
+    if 'quiz_level_passed' not in session:
+        session['quiz_level_passed'] = 1
+
+    
+    if session['quiz_level_passed'] > level:
+        print(session['quiz_level_passed'])
+        return redirect(url_for('quiz', name=name,level=session['quiz_level_passed']))
+
+    conn = get_db_connection()
+    questions = conn.execute('SELECT * FROM questions WHERE category=? and level=? ORDER BY question',(name,level_title,))
+    questions = questions.fetchall()
+    question_lev=int(level)
+    
+
+    session['quiz_level_passed']=level
+
+    if request.method == 'POST':
+        if int(level)  != 1:
+            question_lev = int(level)  - 1; 
+            question_lev_title = make_level_title(question_lev)
+        lev_questions = conn.execute('SELECT * FROM questions WHERE category=? and level=? ORDER BY question',(name,question_lev_title,))
+        lev_questions = lev_questions.fetchall()
+        for q in lev_questions:
+            user_answer = request.form.get(f'{q["id"]}')
+            q_id=q['id']
+            mark_count= 0
+            if(user_answer == q['answer']):
+                mark_count= 1
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO user_answers (quiz_id, user_id, question_id, user_answer, mark_count) VALUES (?, ?, ?, ?, ?)', (session['quiz_id'], session['user_id'],q_id,user_answer,mark_count))
+            conn.commit()
+            
+        if int(level) == 5:
+            
+            quizid=session['quiz_id']
+            result= conn.execute('SELECT sum(mark_count) as total_mark FROM user_answers WHERE quiz_id=? and user_id=?',(quizid,session['user_id'],))
+            total_mark=result.fetchone()[0]
+            print(total_mark)
+            print(total_mark)
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO quiz_list (quiz_id, user_id, category, total_mark) VALUES (?, ?, ?, ?)', (quizid, session['user_id'],name,total_mark))
+            conn.commit()
+            session.pop('quiz_id')
+            session.pop('quiz_level_passed')
+            flash('Thank you. You are successful complete!')
+            return redirect(url_for('profile'))
+
+    conn.close()
+
+    return render_template('quiz.html',name=name,level=level,questions=questions)
+
+def make_level_title(level):
+    return 'Level ' + str(level)
+
+@app.route('/visualize-mi',defaults={'name':"MRI"})
+def visualize_mi(name):
+    name = request.args.get('category')
+    conn = get_db_connection()
+    levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
+    levels=levels_cursor.fetchall()
+    category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
+    categories = category_cursor.fetchall()    
+    conn.close()
+
+    return render_template('tuto.html',name=name,levels=levels,categories=categories)
+
 
 #auth area start
 @app.route('/register', methods=['GET', 'POST'])
@@ -98,15 +202,60 @@ def profile():
 
     if 'user_id' in session:
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE id = ?", (session['user_id'],)).fetchall()
+        user_id=session['user_id']
+        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchall()
+        # Execute the SQL query
+        score_list=conn.execute('SELECT * FROM quiz_list WHERE user_id = ?', (user_id,))
+        score_list = score_list.fetchall()
+        
+        quiz_id = request.args.get('quiz_id')
+        quiz_cat = request.args.get('quiz_cat')
+        quiz_details=''
+        if quiz_id:
+           # Assuming you have quiz_details defined
+            quiz_details = conn.execute(
+                'SELECT * FROM user_answers '
+                'JOIN questions ON questions.id = user_answers.question_id '
+                'WHERE quiz_id = ? AND user_id = ? '
+                'ORDER BY questions.level',
+                (quiz_id, session['user_id'])
+            ).fetchall()
+
         conn.close()
-        return render_template('profile.html',user=user)
+        return render_template('profile.html',user=user,score_list=score_list,quiz_details=quiz_details,quiz_cat=quiz_cat)
     else:
         return redirect(url_for('login'))
 
+@app.route('/leaderboard')
+def leaderboard():
+    if 'user_id' in session:
+        conn = get_db_connection()
+        category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
+        categories = category_cursor.fetchall()    
+
+        quiz_cat = request.args.get('quiz_cat')
+        quiz_details=''
+        if quiz_cat:
+           # Assuming you have quiz_details defined
+            quiz_details = conn.execute(
+                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id WHERE quiz_list.category = ? ORDER BY total_mark',
+                (quiz_cat,)
+            ).fetchall()
+        else:
+            quiz_details = conn.execute(
+                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id ORDER BY total_mark DESC',
+            ).fetchall()
+
+        conn.close()
+        return render_template('leaderboard.html',quiz_details=quiz_details,quiz_cat=quiz_cat,categories=categories)
+    else:
+        return redirect(url_for('login'))
+    
+    
+
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    session.clear()
     return redirect(url_for('login'))
 
 #auth area end 
@@ -140,3 +289,9 @@ def send_welcome_email(username, email):
     msg.html = render_template('email_registration.html', username=username)
     mail.send(msg)
 
+# Logging user check
+def get_login_user():
+    return session.get('user_id')
+
+def is_login():
+    return 1 if get_login_user() else 0

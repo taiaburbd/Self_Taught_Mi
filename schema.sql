@@ -71,3 +71,21 @@ CREATE TABLE IF NOT EXISTS questions (
     created_by VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS user_answers (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    question_id INTEGER,
+    user_answer VARCHAR(255),
+    quiz_id VARCHAR(255),
+    mark_count INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS quiz_list (
+    id INTEGER PRIMARY KEY,
+    quiz_id VARCHAR(255),
+    user_id INTEGER,
+    total_mark INTEGER,
+    category VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

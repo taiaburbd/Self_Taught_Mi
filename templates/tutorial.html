@@ -23,7 +23,7 @@
                         {% endif %}
 
                         {% for cat in categories %}
-                        {% if loop.index <= catlen/2 %}
+                        {% if loop.index <= 2 %}
                         <li class="feature-item">
                             <div class="left-icon">
                                 <img src="{{ url_for('static',filename='assets/images/features-first-icon.png') }}" alt="First One">
@@ -43,7 +43,7 @@
                 <div class="col-lg-6">
                     <ul class="features-items">
                         {% for cat in categories %}
-                        {% if loop.index > catlen/2 and loop.index <= catlen %}
+                        {% if loop.index > 2 and loop.index <= 3 %}
                         <li class="feature-item">
                             <div class="left-icon">
                                 <img src="{{ url_for('static',filename='assets/images/features-first-icon.png') }}" alt="fourth muscle">

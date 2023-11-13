@@ -5,17 +5,108 @@
 <section class="section" id="features">
   <div class="container">
       <div class="row">
-        <div class="col-lg-6 offset-lg-3">
+        <div class="col-lg-12">
           <div class="section-heading">
               <h2>Hola!! <em>{% print(session['user_fullname']) %}</em></h2>
               <p>Email: {% print(session['user_name']) %}</p>
+              <h1>Quiz Results</h1>
+              <h3><a href="{{url_for('leaderboard')}}">Leaderboard</a></h3>
+
+    <table class="table table-stripe">
+        <thead>
+            <tr>
+                <!-- <th>ID</th>
+                <th>Quiz ID</th>
+                <th>User ID</th> -->
+                <th>Category</th>
+                <th>Score</th>
+                <th>Quiz Date & Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in score_list %}
+                <tr>
+                    <!-- <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td> -->
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[3] }}</td>
+                   
+                    <td>{{ row[5] }}</td>
+                    <td><a href="{{url_for('profile',quiz_id=row[1],quiz_cat=row[4])}}" class="btn btn-info btn-sm">View Details</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if quiz_details:%}
+    <h3>QUIZ Details: {{quiz_cat}}</h3>
+    <table class="table table-stripe table-sm">
+      <thead>
+        <tr>
+          <th>SL</th>
+          <th>Question</th>
+          <th>Options</th>
+          <th>User Answer</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set options = ['option1', 'option2', 'option3', 'option4']        %}
+        {% for qa in quiz_details %}
+        <tr>
+          <td>{{loop.index}}</td>
+          <td> <span class="badge badge-info">{{qa.level}}</span>
+          {{qa.question}}</td>
+          <td>
+      
+            {% if qa.option1 == qa.answer %}
+              <span class="badge badge-success"> {{qa.option1}}</span>
+            {% else %}
+              <span class="badge badge-secondary"> {{qa.option1}}</span>
+            {% endif %}
+
+            {% if qa.option2 == qa.answer %}
+              <span class="badge badge-success"> {{qa.option2}}</span>
+            {% else %}
+              <span class="badge badge-secondary"> {{qa.option2}}</span>
+            {% endif %}
+
+            {% if qa.option3 == qa.answer %}
+              <span class="badge badge-success"> {{qa.option3}}</span>
+            {% else %}
+              <span class="badge badge-secondary"> {{qa.option3}}</span>
+            {% endif %}
+
+            {% if qa.option4 == qa.answer %}
+              <span class="badge badge-success"> {{qa.option4}}</span>
+            {% else %}
+              <span class="badge badge-secondary"> {{qa.option4}}</span>
+            {% endif %}
+
+          </td>
+          <td>
+            {% if qa.user_answer == qa.answer %}
+              <span class="badge badge-success"> {{qa.user_answer}}</span><br/>
+            {% else %}
+              <span class="badge badge-danger"> {{qa.user_answer}}</span><br/>
+            {% endif %}
+          </td>
+          <td>{{qa.mark_count}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
               <h3>{% if session['user_type'] == 1 %}
                 <a href="/admin">Access to Admin Panel</a>
                 {% else %}
                     User
                 {% endif %}
               </h3>
-              <a href="/logout">logout</a>
+              <a href="/logout"><button class="btn btn-danger">
+             logout
+            </button></a>
           </div>
       </div>
     </div>

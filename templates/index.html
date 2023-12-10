@@ -4,12 +4,12 @@
     <!-- ***** Main Banner Area Start ***** -->
     <div class="main-banner" id="top">
         <video autoplay muted loop id="bg-video">
-            <source src="{{ url_for('static',filename='assets/images/gym-video.mp4') }}" type="video/mp4" />
+            <source src="{{ url_for('static',filename='assets/images/main-video.mp4') }}" type="video/mp4" />
         </video>
   
         <div class="video-overlay header-text">
             <div class="caption">
-                <h6>work harder, get stronger</h6>
+                <h6>Study harder, get Smarter</h6>
                 <h2>easy with our <em>Mi</em></h2>
                 <div class="main-button scroll-to-section">
                     <a href="#features">Become a learner</a>
@@ -45,7 +45,7 @@
                                 <img src="{{ url_for('static',filename='assets/images/features-first-icon.png') }}" alt="First One">
                             </div>
                             <div class="right-content">
-                                <h4>{{ cat.category_id }}</h4>
+                                <a href="{{url_for('tuto', category=cat.category_id)}}"><h4>{{ cat.category_id }}</h4></a>
                                 <p>These images help healthcare professionals in diagnosing and treating various medical conditions.
 
                                 </p>
@@ -59,13 +59,13 @@
                 <div class="col-lg-6">
                     <ul class="features-items">
                         {% for cat in categories %}
-                        {% if loop.index > 2 and loop.index <= 3 %}
+                        {% if loop.index > 2 and loop.index <= 4 %}
                         <li class="feature-item">
                             <div class="left-icon">
                                 <img src="{{ url_for('static',filename='assets/images/features-first-icon.png') }}" alt="fourth muscle">
                             </div>
                             <div class="right-content">
-                                <h4>{{ cat.category_id }}</h4>
+                                <a href="{{url_for('tuto', category=cat.category_id)}}"><h4>{{ cat.category_id }}</h4></a>
                                 <p>These images help healthcare professionals in diagnosing and treating various medical conditions.                                </p>
                                 <a href="{{url_for('tuto', category=cat.category_id)}}" class="text-button">Discover More</a>
                             </div>

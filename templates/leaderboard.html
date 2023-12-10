@@ -24,22 +24,19 @@
               <table class="table table-stripe">
                 <thead>
                     <tr>
-                        <!-- <th>ID</th>
-                        <th>Quiz ID</th>
-                        <th>User ID</th> -->
                         <th>Full Name</th>
                         <th>Email</th>
-                        <th>Categroy</th>
                         <th>Score</th>
+                        <th>Time</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for row in quiz_details %}
                         <tr>
-                            <td>{{ row.fullname.upper()                            }}</td>
+                            <td>{{ row.fullname.upper()}}</td>
                             <td>{{ row.username }}</td>
-                            <td>{{ row.category }}</td>
                             <td>{{ row.total_mark }}</td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                 </tbody>

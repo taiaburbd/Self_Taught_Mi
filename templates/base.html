@@ -33,9 +33,8 @@
         </div>
         <!-- ***** Preloader End ***** -->
         
-        
         <!-- ***** Header Area Start ***** -->
-        <header class="header-area header-sticky">
+        <header class="header-area header-sticky" style="{% if request.path != '/' %}background:gray{% endif %}">
             <div class="container">
                 <div class="row">
                     <div class="col-12">
@@ -44,17 +43,22 @@
                             <a href="/" class="logo">Self Taught<em> Mi</em></a>
                             <!-- ***** Logo End ***** -->
                             <!-- ***** Menu Start ***** -->
+                               
                             <ul class="nav">
-                                <li class="scroll-to-section"><a href="/" class="active">Home</a></li>
-                                <li class="scroll-to-section"><a href="/tutorial">Learn mi</a></li>
-                                <li class="scroll-to-section"><a href="/test">Test mi</a></li>
-                                <li class="scroll-to-section"><a href="/visualize-mi">Visualize Mi</a></li>
+                                <li class="scroll-to-section "><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                                <li class="scroll-to-section "><a href="/tutorial" class="{% if request.path == '/tutorial' %}active{% endif %}">Learn mi</a></li>
+                                
+                                <li class="scroll-to-section "><a href="/visualize-mi" class="{% if request.path == '/visualize-mi' %}active{% endif %}">Visualize Mi</a></li>
+                                <li class="scroll-to-section "><a href="/test_mi" class="{% if request.path == '/test_mi' %}active{% endif %}">Test mi</a></li>
                                 {% if 'user_id' in session %}
-                                  <li class="main-button"><a href="/profile">{% print(session['user_fullname']) %} Profile</a></li>
+                                    <li class="main-button ">
+                                        <a href="/profile" >{{ session['user_fullname'] }} Profile</a>
+                                    </li>
                                 {% else %}
-                                  <li class="main-button"><a href="/register#signup">Sign Up</a></li>
+                                    <li class="main-button"><a href="/register#signup">Sign Up</a></li>
                                 {% endif %}
-                            </ul>        
+                            </ul>
+                            
                             <a class='menu-trigger'>
                                 <span>Menu</span>
                             </a>
@@ -138,16 +142,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <p>Copyright &copy; 2020 Training Studio
+                    <p>Copyright &copy; 2023 Bria G7
                     
-                    - Designed by <a rel="nofollow" href="https://templatemo.com" class="tm-text-link" target="_parent">TemplateMo</a><br>
-
-                Distributed by <a rel="nofollow" href="https://themewagon.com" class="tm-text-link" target="_blank">ThemeWagon</a>
+                    - Develop by <a rel="nofollow" href="st-mi.xyz" class="tm-text-link" target="_parent">Andrew, Toufiq, Taiabur </a><br>
                 
-                </p>
-                    
-                    <!-- You shall support us a little via PayPal to info@templatemo.com -->
-                    
+                </p>  
                 </div>
             </div>
         </div>

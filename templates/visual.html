@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- ***** Our Classes Start ***** -->
+    <section class="section" id="our-classes">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                        <h2>{{name}} <em>Visualize</em></h2>
+                        <!-- <img src="assets/images/line-dec.png" alt=""> -->
+                        <p>These images help healthcare professionals in diagnosing and treating various medical conditions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="tabs">
+              <div class="col-lg-1">
+              </div>
+              <div class="col-lg-10">
+                <section class='tabs-content'>
+                        <article >
+                            {% for img in levels %}
+                            <div class="card" style="float: left;">
+                                <div class="card-body text-center">
+                                    <h6 ><em>{{img.title}}</em></h6>
+                                    <img src="{{ url_for('static', filename='uploads/png_slices/' + img.png_path) }}" width="250" alt="{{ img.title }}">
+                                    <br/>
+                                    <span class="badge badge-info text text-xm">{{img.img_path}}</span><br/>
+                                    <a href="" class="badge badge-warning text text-white">View 3D</a>
+                                </div>
+                            </div> 
+                            {% endfor %}
+                        </article>
+                </section>
+              </div>
+              <div class="col-lg-12" style="text-align: center;">
+                <!-- <a href="/tutorial"><button class="btn btn-warning">Back to Learn</button></a>
+                <a href="{{url_for('test_mi', category=name)}}"><button class="btn btn-warning">Quiz Start</button></a> -->
+              </div>
+            </div>
+        </div>
+    </section>
+    <!-- ***** Our Classes End ***** -->
+    
+    {% endblock %}

@@ -15,10 +15,6 @@
     <table class="table table-stripe">
         <thead>
             <tr>
-                <!-- <th>ID</th>
-                <th>Quiz ID</th>
-                <th>User ID</th> -->
-                <th>Category</th>
                 <th>Score</th>
                 <th>Quiz Date & Time</th>
                 <th>Action</th>
@@ -27,20 +23,15 @@
         <tbody>
             {% for row in score_list %}
                 <tr>
-                    <!-- <td>{{ row[0] }}</td>
-                    <td>{{ row[1] }}</td>
-                    <td>{{ row[2] }}</td> -->
-                    <td>{{ row[4] }}</td>
-                    <td>{{ row[3] }}</td>
-                   
                     <td>{{ row[5] }}</td>
-                    <td><a href="{{url_for('profile',quiz_id=row[1],quiz_cat=row[4])}}" class="btn btn-info btn-sm">View Details</a></td>
+                    <td>{{ row[3] }}</td>
+                    <td><a href="{{url_for('profile',quiz_id=row[1])}}" class="btn btn-info btn-sm">View Details</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     {% if quiz_details:%}
-    <h3>QUIZ Details: {{quiz_cat}}</h3>
+    <h3>QUIZ Details</h3>
     <table class="table table-stripe table-sm">
       <thead>
         <tr>

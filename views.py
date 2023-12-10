@@ -7,6 +7,11 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mail import Mail, Message
 from app import app
 import secrets
+import os
+import plotly.express as px
+import nibabel as nib
+import numpy as np
+
 
 mail = Mail(app)
 
@@ -18,7 +23,7 @@ def get_db_connection():
 @app.route('/')
 def hello():
     conn = get_db_connection()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
+    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ORDER BY tutorial_id ASC')
     categories = category_cursor.fetchall()
     conn.close()
     return render_template('index.html', categories=categories, utc_dt=datetime.datetime.utcnow())
@@ -27,7 +32,7 @@ def hello():
 def tutorial():
     
     conn = get_db_connection()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ORDER BY category_id ASC')
+    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ORDER BY tutorial_id ASC')
     categories = category_cursor.fetchall()    
     conn.close()
 
@@ -38,7 +43,7 @@ def tutorial():
 def tuto(name):
     name = request.args.get('category')
     conn = get_db_connection()
-    levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
+    levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY tutorial_id desc',(name,))
     levels=levels_cursor.fetchall()
     category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
     categories = category_cursor.fetchall()    
@@ -58,6 +63,8 @@ def testarea():
 
 @app.route('/test_mi',defaults={'name':"MRI"})
 def test_mi(name):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
     name = request.args.get('category')
     conn = get_db_connection()
     levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
@@ -76,6 +83,8 @@ def test_mi(name):
     
 @app.route('/quiz',methods=['GET', 'POST'])
 def quiz():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
     name = request.args.get('name')
     level = request.args.get('level')
     level = int(level)
@@ -86,13 +95,12 @@ def quiz():
     if 'quiz_level_passed' not in session:
         session['quiz_level_passed'] = 1
 
-    
     if session['quiz_level_passed'] > level:
         print(session['quiz_level_passed'])
         return redirect(url_for('quiz', name=name,level=session['quiz_level_passed']))
 
     conn = get_db_connection()
-    questions = conn.execute('SELECT * FROM questions WHERE category=? and level=? ORDER BY question',(name,level_title,))
+    questions = conn.execute('SELECT * FROM questions WHERE level=? ORDER BY question',(level_title,))
     questions = questions.fetchall()
     question_lev=int(level)
     
@@ -103,7 +111,7 @@ def quiz():
         if int(level)  != 1:
             question_lev = int(level)  - 1; 
             question_lev_title = make_level_title(question_lev)
-        lev_questions = conn.execute('SELECT * FROM questions WHERE category=? and level=? ORDER BY question',(name,question_lev_title,))
+        lev_questions = conn.execute('SELECT * FROM questions WHERE level=? ORDER BY question',(question_lev_title,))
         lev_questions = lev_questions.fetchall()
         for q in lev_questions:
             user_answer = request.form.get(f'{q["id"]}')
@@ -120,10 +128,9 @@ def quiz():
             quizid=session['quiz_id']
             result= conn.execute('SELECT sum(mark_count) as total_mark FROM user_answers WHERE quiz_id=? and user_id=?',(quizid,session['user_id'],))
             total_mark=result.fetchone()[0]
-            print(total_mark)
-            print(total_mark)
+
             cursor = conn.cursor()
-            cursor.execute('INSERT INTO quiz_list (quiz_id, user_id, category, total_mark) VALUES (?, ?, ?, ?)', (quizid, session['user_id'],name,total_mark))
+            cursor.execute('INSERT INTO quiz_list (quiz_id, user_id, total_mark) VALUES (?, ?, ?)', (quizid, session['user_id'],total_mark))
             conn.commit()
             session.pop('quiz_id')
             session.pop('quiz_level_passed')
@@ -137,17 +144,27 @@ def quiz():
 def make_level_title(level):
     return 'Level ' + str(level)
 
-@app.route('/visualize-mi',defaults={'name':"MRI"})
-def visualize_mi(name):
+@app.route('/visualize-mi')
+def visualize_mi():
+    conn = get_db_connection()
+    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ORDER BY tutorial_id ASC')
+    categories = category_cursor.fetchall()    
+    conn.close()
+    return render_template('visualize.html',categories=categories)
+
+@app.route('/visual-mi',defaults={'name':"MRI"})
+def visual_mi(name):
     name = request.args.get('category')
     conn = get_db_connection()
-    levels_cursor = conn.execute('SELECT level_id, title, description, details FROM tutorials WHERE category_id=? ORDER BY title',(name,))
+
+    levels_cursor = conn.execute('SELECT * FROM images_table WHERE category=? ORDER BY id desc',(name,))
     levels=levels_cursor.fetchall()
+
     category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')
     categories = category_cursor.fetchall()    
     conn.close()
 
-    return render_template('tuto.html',name=name,levels=levels,categories=categories)
+    return render_template('visual.html',name=name,levels=levels,categories=categories)
 
 
 #auth area start
@@ -211,7 +228,7 @@ def profile():
         quiz_id = request.args.get('quiz_id')
         quiz_cat = request.args.get('quiz_cat')
         quiz_details=''
-        if quiz_id:
+        if quiz_id: 
            # Assuming you have quiz_details defined
             quiz_details = conn.execute(
                 'SELECT * FROM user_answers '
@@ -250,8 +267,6 @@ def leaderboard():
         return render_template('leaderboard.html',quiz_details=quiz_details,quiz_cat=quiz_cat,categories=categories)
     else:
         return redirect(url_for('login'))
-    
-    
 
 @app.route('/logout')
 def logout():
@@ -269,7 +284,6 @@ def test():
     conn.close()
 
     return render_template('tuto.html',name=name,levels=levels_data)
-
 
 
 @app.route('/mi')
@@ -295,3 +309,30 @@ def get_login_user():
 
 def is_login():
     return 1 if get_login_user() else 0
+
+# image views
+
+def load_nii(file_path):
+    # Load .nii file
+    nii_img = nib.load(file_path)
+    data = nii_img.get_fdata()
+    return data
+
+def create_plot(data):
+    # Create a 3D plot using Plotly
+    x, y, z = np.where(data > 0)
+    values = data[x, y, z]
+
+    fig = px.scatter_3d(x=x, y=y, z=z, color=values, opacity=0.6, size_max=6)
+    fig.update_layout(scene=dict(aspectmode="data"))
+
+    return fig
+
+app.route('/view3d/<filename>')
+def view3d(filename):
+    path = app.static_folder+"/uploads/"
+    nii_file_path = path + filename
+    nii_data = load_nii(nii_file_path)
+    plot = create_plot(nii_data)
+
+    return render_template('view3d.html', plot=plot.to_html(full_html=False))

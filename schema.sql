@@ -89,3 +89,13 @@ CREATE TABLE IF NOT EXISTS quiz_list (
     category VARCHAR(255),
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS images_table (
+    id INTEGER PRIMARY KEY,
+    title VARCHAR(255),
+    category VARCHAR(255),
+    img_path VARCHAR(255) NOT NULL,
+    png_path VARCHAR(255) NULL,
+    user_id VARCHAR(255) NULL,
+    status VARCHAR(255) NULL
+);

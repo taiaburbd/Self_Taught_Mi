@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-lg-6 offset-lg-3">
         <div class="section-heading">
-          <h2>Quiz <em>{{name}}</em></h2>
+          <h2>Quiz </h2>
           <!-- <img src="assets/images/line-dec.png" alt=""> -->
           <p>
             These images help healthcare professionals in diagnosing and
@@ -23,7 +23,7 @@
         onsubmit="return validateForm()"
       >
         <div class="col-lg-1"></div>
-        <div class="col-lg-10">
+        <div class="col-lg-11">
           <section class="tabs-content">
             <article>
               <div class="card">
@@ -81,7 +81,6 @@
                     />
                     {{ question.option4 }} </label
                   ><br />
-                  <p>question set up by: {{ question.created_by }} </p>
                 </div>
               </div>
               {% endfor %}
@@ -119,7 +118,7 @@
 <!-- ***** Our Classes End ***** -->
 <script>
   // Use let instead of const for variables that will be reassigned
-  let countdownDuration = 180; // 3 minutes
+  let countdownDuration = 120; // 3 minutes
 
   const countdownElement = document.getElementById("countdown");
   const form = document.getElementById("frmQuiz");

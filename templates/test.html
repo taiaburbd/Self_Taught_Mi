@@ -31,7 +31,7 @@
                             <div class="right-content">
                                 <h4>{{ cat.category_id }}</h4>
                                 <p>These images help healthcare professionals in diagnosing and treating various medical conditions.</p>
-                                <a href="{{url_for('test_mi', category=cat.category_id)}}" class="text-button">Discover More</a>
+                                <a href="{{url_for('test_mi', category=cat.category_id)}}" class="text-button">Get started with testing</a>
                             </div>
                         </li>
                         {% endif %}
@@ -47,9 +47,9 @@
                                 <img src="{{ url_for('static',filename='assets/images/features-first-icon.png') }}" alt="fourth muscle">
                             </div>
                             <div class="right-content">
-                                <h4>{{ cat.category_id }}</h4>
+                                <h4>{{ cat.category_id }}</h4></a>
                                 <p>These images help healthcare professionals in diagnosing and treating various medical conditions.                                </p>
-                                <a href="{{url_for('tuto', category=cat.category_id)}}" class="text-button">Discover More</a>
+                                <a href="{{url_for('tuto', category=cat.category_id)}}" class="text-button">Get started with testing</a>
                             </div>
                         </li>
                         {% endif %}

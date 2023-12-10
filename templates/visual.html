@@ -28,7 +28,7 @@
                                     <img src="{{ url_for('static', filename='uploads/png_slices/' + img.png_path) }}" width="250" alt="{{ img.title }}">
                                     <br/>
                                     <span class="badge badge-info text text-xm">{{img.img_path}}</span><br/>
-                                    <a href="" class="badge badge-warning text text-white">View 3D</a>
+                                    <a href="{{url_for('img_view',image_id=img.img_path)}}" class="text-button">3D view</a>
                                 </div>
                             </div> 
                             {% endfor %}

@@ -222,8 +222,6 @@ def save_slices_as_png(nifti_file_path):
     png_folder = path+ "png_slices/"
     os.makedirs(png_folder, exist_ok=True)
 
-    print(nifti_file_path)
-
     name = os.path.splitext(nifti_file_path)[0]
     png_file_name = png_folder + name
 
@@ -304,7 +302,7 @@ def delete_image(image_path):
     try:
         db = get_db_connection()
         cursor = db.cursor()
-        image_id=param_value = request.args.get('image_id')
+        image_id = request.args.get('image_id')
 
         cursor.execute("DELETE FROM images_table WHERE id = ?", (image_id))
         file_path = app.static_folder+ '/uploads/' + image_path
@@ -324,3 +322,57 @@ def delete_image(image_path):
         flash(f'Try agian: {str(e)}','error')
         return redirect(url_for('list_images'))
 # Images area end 
+ 
+# Read (list all evaluation)
+@app.route('/evaluation/list')
+def list_evaluation():
+    conn = get_db_connection()
+    quiz_details=''
+    quiz_id = request.args.get('quiz_id')
+    if quiz_id: 
+        # Assuming you have quiz_details defined
+        quiz_details = conn.execute(
+                'SELECT * FROM user_answers '
+                'JOIN questions ON questions.id = user_answers.question_id '
+                'WHERE quiz_id = ? AND user_id = ? '
+                'ORDER BY questions.level',
+                (quiz_id, session['user_id'])
+            ).fetchall()
+
+    # Fetch data from the "tutorials" table
+    _cursor = conn.execute('SELECT quiz_list.*, users.fullname FROM quiz_list JOIN users ON quiz_list.user_id = users.id')
+    list_data = _cursor.fetchall()
+
+    # Fetch data from the "summary" table
+
+    cat_count_cursor_questions = conn.execute('SELECT category_id, COUNT(*) AS total_quantity FROM tutorials GROUP BY category_id')
+    cat_count_cursor_questions = cat_count_cursor_questions.fetchall()
+    
+    cat_count_cursor_images = conn.execute('SELECT category, COUNT(*) AS total_quantity FROM images_table GROUP BY category')
+    cat_count_cursor_images = cat_count_cursor_images.fetchall()
+    conn.close()
+
+    return render_template('admin_evaluation.html', list_data=list_data, quiz_details=quiz_details)
+ 
+# Delete 
+@app.route('/evaluation-delete/<quiz_id>', methods=['GET'])
+def delete_evaluation(quiz_id):
+    try:
+        db = get_db_connection()
+        cursor = db.cursor()
+        # quiz_id = request.args.get('quiz_id')
+
+        cursor.execute("DELETE FROM quiz_list WHERE quiz_id = ?", (quiz_id,))
+        cursor.execute("DELETE FROM user_answers WHERE quiz_id = ?", (quiz_id,))
+
+        db.commit()
+        cursor.close()
+        flash(f'Data successfully deleted','success')
+        return redirect(url_for('list_evaluation'))
+    except Exception as e:
+        flash(f'Try agian: {str(e)}','error')
+        return redirect(url_for('list_evaluation'))
+# evaluation area end 
+
+
+

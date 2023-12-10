@@ -1,0 +1,104 @@
+{% extends 'admin_template.html' %}
+{% block content %}
+<div class="section">
+    <h1 class="mt-4">Evaluation Management</h1>
+</div>
+
+    <div class="section">
+    <h2>Evaluation List</h2>
+    <table class="table table-striped" id="dataTable">
+        <thead>
+            <tr>
+                <th>Sl.</th>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Session Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in list_data %}
+            <tr>
+                <td>
+                    {{ loop.index }}
+                </td>
+                <td>
+                    {{ item.fullname }}
+                </td>
+                <td>{{ item.total_mark }}</td>
+                <td>{{ item.category }}</td>
+                <td>
+                    
+                    <a href="{{url_for('list_evaluation',quiz_id=item.quiz_id)}}" class="btn btn-info btn-sm"> Details</a>
+                    <a href="{{url_for('delete_evaluation', quiz_id=item.quiz_id)}}" onClick="confirm('Delete entry?')">
+                        <button class="btn btn-danger btn-sm">Delete</button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% if quiz_details:%}
+<div class="section">
+    <h1 class="mb-4">Quiz Details</h1>
+    <table class="table table-stripe table-sm">
+        <thead>
+          <tr>
+            <th>SL</th>
+            <th>Question</th>
+            <th>Options</th>
+            <th>User Answer</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% set options = ['option1', 'option2', 'option3', 'option4']        %}
+          {% for qa in quiz_details %}
+          <tr>
+            <td>{{loop.index}}</td>
+            <td> <span class="badge badge-info">{{qa.level}}</span>
+            {{qa.question}}</td>
+            <td>
+        
+              {% if qa.option1 == qa.answer %}
+                <span class="badge badge-success"> {{qa.option1}}</span>
+              {% else %}
+                <span class="badge badge-secondary"> {{qa.option1}}</span>
+              {% endif %}
+  
+              {% if qa.option2 == qa.answer %}
+                <span class="badge badge-success"> {{qa.option2}}</span>
+              {% else %}
+                <span class="badge badge-secondary"> {{qa.option2}}</span>
+              {% endif %}
+  
+              {% if qa.option3 == qa.answer %}
+                <span class="badge badge-success"> {{qa.option3}}</span>
+              {% else %}
+                <span class="badge badge-secondary"> {{qa.option3}}</span>
+              {% endif %}
+  
+              {% if qa.option4 == qa.answer %}
+                <span class="badge badge-success"> {{qa.option4}}</span>
+              {% else %}
+                <span class="badge badge-secondary"> {{qa.option4}}</span>
+              {% endif %}
+  
+            </td>
+            <td>
+              {% if qa.user_answer == qa.answer %}
+                <span class="badge badge-success"> {{qa.user_answer}}</span><br/>
+              {% else %}
+                <span class="badge badge-danger"> {{qa.user_answer}}</span><br/>
+              {% endif %}
+            </td>
+            <td>{{qa.mark_count}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</div>
+{% endif %}
+{% endblock %}

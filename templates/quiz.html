@@ -29,7 +29,7 @@
               <div class="card">
                 <div class="card-body">
                   <h4>Level {{level}}</h4>
-                  <p>Total Time Duration: 3 minutes</p>
+                  <p>Total Time Duration: 2 minutes</p>
                   <!-- <h2 class="alert alert-success">Remaining Time: <span class="text text-danger font-weight-bold countdown"></span>minutes</h2> -->
 
                   <audio
@@ -105,6 +105,7 @@
             </button>
           </div>
         </div>
+        <input type="hidden" id="remainingTime" name="remaining_time" value="">
       </form>
     </div>
   </div>
@@ -119,6 +120,7 @@
 <script>
   // Use let instead of const for variables that will be reassigned
   let countdownDuration = 120; // 3 minutes
+  var remainingTimeInput = document.getElementById('remainingTime');
 
   const countdownElement = document.getElementById("countdown");
   const form = document.getElementById("frmQuiz");
@@ -129,6 +131,9 @@
     const seconds = countdownDuration % 60;
 
     countdownElement.textContent = ` ${minutes}:${seconds} `;
+
+    // Update hidden input value
+    remainingTimeInput.value = countdownDuration;
 
     if (countdownDuration <= 0) {
       clearInterval(interval);

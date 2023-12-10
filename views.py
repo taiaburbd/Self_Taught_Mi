@@ -80,23 +80,29 @@ def test_mi(name):
 # def go_to_login():
 #     if not is_login():
 #         return redirect(url_for('hello'))
-    
+
+def calculate_remaining_time(pre_time,lev_time):
+    cur_time = 120 - int(lev_time)
+    return pre_time + cur_time
+
 @app.route('/quiz',methods=['GET', 'POST'])
 def quiz():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     name = request.args.get('name')
     level = request.args.get('level')
+    
     level = int(level)
     level_title = make_level_title(level)
     # generate exam id 
     if 'quiz_id' not in session:
         session['quiz_id'] = secrets.token_urlsafe(12)
+        session['quiz_time'] = 0 
     if 'quiz_level_passed' not in session:
         session['quiz_level_passed'] = 1
 
     if session['quiz_level_passed'] > level:
-        print(session['quiz_level_passed'])
+        # print(session['quiz_level_passed'])
         return redirect(url_for('quiz', name=name,level=session['quiz_level_passed']))
 
     conn = get_db_connection()
@@ -108,9 +114,16 @@ def quiz():
     session['quiz_level_passed']=level
 
     if request.method == 'POST':
+        lev_time = request.form["remaining_time"]
+        print(lev_time)
+        print(session['quiz_time'])
+        session['quiz_time'] = calculate_remaining_time(session['quiz_time'], lev_time)
+        print(session['quiz_time'])
+
         if int(level)  != 1:
             question_lev = int(level)  - 1; 
             question_lev_title = make_level_title(question_lev)
+
         lev_questions = conn.execute('SELECT * FROM questions WHERE level=? ORDER BY question',(question_lev_title,))
         lev_questions = lev_questions.fetchall()
         for q in lev_questions:
@@ -123,18 +136,30 @@ def quiz():
             cursor.execute('INSERT INTO user_answers (quiz_id, user_id, question_id, user_answer, mark_count) VALUES (?, ?, ?, ?, ?)', (session['quiz_id'], session['user_id'],q_id,user_answer,mark_count))
             conn.commit()
             
-        if int(level) == 5:
             
+        if int(level) == 5:
+            session['quiz_time'] = calculate_remaining_time(session['quiz_time'], lev_time)
             quizid=session['quiz_id']
             result= conn.execute('SELECT sum(mark_count) as total_mark FROM user_answers WHERE quiz_id=? and user_id=?',(quizid,session['user_id'],))
             total_mark=result.fetchone()[0]
 
+            time_format =0 
+            hours, remainder = divmod(session['quiz_time'], 3600)
+            minutes, seconds = divmod(remainder, 60)
+            time_format = f"{int(minutes)}:{int(seconds)}"
+            
             cursor = conn.cursor()
-            cursor.execute('INSERT INTO quiz_list (quiz_id, user_id, total_mark) VALUES (?, ?, ?)', (quizid, session['user_id'],total_mark))
-            conn.commit()
+            cursor.execute('INSERT INTO quiz_list (quiz_id, user_id, total_mark, category) VALUES (?, ?, ?, ?)', (quizid, session['user_id'],total_mark, time_format))
+            conn.commit() 
             session.pop('quiz_id')
             session.pop('quiz_level_passed')
+            session.pop('quiz_time')
             flash('Thank you. You are successful complete!')
+            return redirect(url_for('profile'))
+        if int(level) >= 6:
+            session.pop('quiz_id')
+            session.pop('quiz_level_passed')
+            session.pop('quiz_time')
             return redirect(url_for('profile'))
 
     conn.close()
@@ -255,12 +280,12 @@ def leaderboard():
         if quiz_cat:
            # Assuming you have quiz_details defined
             quiz_details = conn.execute(
-                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id WHERE quiz_list.category = ? ORDER BY total_mark',
+                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id WHERE quiz_list.category = ? ORDER BY total_mark DESC, category ASC',
                 (quiz_cat,)
             ).fetchall()
         else:
             quiz_details = conn.execute(
-                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id ORDER BY total_mark DESC',
+                'SELECT * FROM quiz_list JOIN users ON users.id = quiz_list.user_id ORDER BY total_mark DESC, category ASC',
             ).fetchall()
 
         conn.close()
@@ -275,26 +300,26 @@ def logout():
 
 #auth area end 
 
-@app.route('/test')
-def test():
+# @app.route('/test')
+# def test():
     
-    conn = get_db_connection()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
-    categories = category_cursor.fetchall()    
-    conn.close()
+#     conn = get_db_connection()
+#     category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
+#     categories = category_cursor.fetchall()    
+#     conn.close()
 
-    return render_template('tuto.html',name=name,levels=levels_data)
+#     return render_template('tuto.html',name=name,levels=levels_data)
 
 
-@app.route('/mi')
-def mi():
+# @app.route('/mi')
+# def mi():
     
-    conn = get_db_connection()
-    category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
-    categories = category_cursor.fetchall()    
-    conn.close()
+#     conn = get_db_connection()
+#     category_cursor = conn.execute('SELECT category_id, description AS total_quantity FROM tutorials GROUP BY category_id ')
+#     categories = category_cursor.fetchall()    
+#     conn.close()
 
-    return "image view area"
+#     return "image view area"
 
 
 # helper function
@@ -312,27 +337,67 @@ def is_login():
 
 # image views
 
-def load_nii(file_path):
-    # Load .nii file
-    nii_img = nib.load(file_path)
-    data = nii_img.get_fdata()
+def load_nii(filepath):
+    img = nib.load(filepath)
+    data = img.get_fdata()
     return data
 
-def create_plot(data):
-    # Create a 3D plot using Plotly
-    x, y, z = np.where(data > 0)
-    values = data[x, y, z]
+import tempfile
+import plotly.graph_objs as go
+def plot_slices(nii_data, plane):
+    if plane == "Axial":
+        fig = px.imshow(nii_data[:, :, nii_data.shape[2]//2].T, color_continuous_scale='gray')
+    elif plane == "Sagittal":
+        fig = px.imshow(nii_data[:, nii_data.shape[1]//2, :].T, color_continuous_scale='gray')
 
-    fig = px.scatter_3d(x=x, y=y, z=z, color=values, opacity=0.6, size_max=6)
-    fig.update_layout(scene=dict(aspectmode="data"))
+    elif plane == "Coronal":
+        fig = px.imshow(nii_data[nii_data.shape[0]//2, :, :].T, color_continuous_scale='gray')
+    
+    fig.update_layout(title=f"{plane} Plane")
+    fig.update_xaxes(title_text="Coronal")
+    fig.update_yaxes(title_text="Sagittal")
 
-    return fig
+    # Save the plot to a temporary HTML file
+    temp_dir = tempfile.mkdtemp()
+    plot_html_path = os.path.join('static', f'{plane.lower()}_plot.html')
+    fig.write_html(plot_html_path)
 
-app.route('/view3d/<filename>')
-def view3d(filename):
-    path = app.static_folder+"/uploads/"
-    nii_file_path = path + filename
+    return plot_html_path
+
+
+@app.route('/view_imgd')
+def img_view():
+    image_id = request.args.get('image_id')
+    path = app.static_folder + "/uploads/"
+    nii_file_path = str(path) + str(image_id)
+    
     nii_data = load_nii(nii_file_path)
-    plot = create_plot(nii_data)
+# # Create axial, sagittal, and coronal plots
+#     axial_plot = px.imshow(nii_data[:, :, nii_data.shape[2]//2].T, binary_string=True)
+#     sagittal_plot = px.imshow(nii_data[:, nii_data.shape[1]//2, :].T, binary_string=True)
+#     coronal_plot = px.imshow(nii_data[nii_data.shape[0]//2, :, :].T, binary_string=True)
 
-    return render_template('view3d.html', plot=plot.to_html(full_html=False))
+    # # Create 3D visualization
+    # combined_fig = plot_3d_visualization(nii_data)
+
+    # # Save plots as temporary HTML files
+    # temp_dir = tempfile.mkdtemp()
+    # axial_html_path = os.path.join(temp_dir, 'axial_plot.html')
+    # sagittal_html_path = os.path.join(temp_dir, 'sagittal_plot.html')
+    # coronal_html_path = os.path.join(temp_dir, 'coronal_plot.html')
+    # combined_html_path = os.path.join(temp_dir, 'combined_plot.html')
+
+    # axial_plot.write_html(axial_html_path)
+    # sagittal_plot.write_html(sagittal_html_path)
+    # coronal_plot.write_html(coronal_html_path)
+    # combined_fig.write_html(combined_html_path)
+
+    # return render_template('view3d.html', axial_plot=axial_html_path, sagittal_plot=sagittal_html_path, coronal_plot=coronal_html_path, combined_plot=combined_html_path)
+    # Create and save axial, sagittal, and coronal plots
+    # Create and save axial, sagittal, and coronal plots
+    axial_plot = plot_slices(nii_data, "Axial")
+    sagittal_plot = plot_slices(nii_data, "Sagittal")
+    coronal_plot = plot_slices(nii_data, "Coronal")
+
+
+    return render_template('view3d.html', axial_plot=axial_plot, sagittal_plot=sagittal_plot, coronal_plot=coronal_plot)

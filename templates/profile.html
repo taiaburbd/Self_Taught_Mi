@@ -9,14 +9,15 @@
           <div class="section-heading">
               <h2>Hola!! <em>{% print(session['user_fullname']) %}</em></h2>
               <p>Email: {% print(session['user_name']) %}</p>
-              <h1>Quiz Results</h1>
+              <h1>Quiz Score</h1>
               <h3><a href="{{url_for('leaderboard')}}">Leaderboard</a></h3>
 
-    <table class="table table-stripe">
+    <table class="table table-stripe table-sm table-bordered">
         <thead>
             <tr>
-                <th>Score</th>
                 <th>Quiz Date & Time</th>
+                <th>Score</th>
+                <th>Session Time</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -25,14 +26,20 @@
                 <tr>
                     <td>{{ row[5] }}</td>
                     <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
                     <td><a href="{{url_for('profile',quiz_id=row[1])}}" class="btn btn-info btn-sm">View Details</a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+
     {% if quiz_details:%}
+    <div class="trainer-item">
+      <div class="">
+        
     <h3>QUIZ Details</h3>
-    <table class="table table-stripe table-sm">
+    <table class="table table-stripe table-sm table-sm table-bordered">
       <thead>
         <tr>
           <th>SL</th>
@@ -88,6 +95,8 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
+</div>
     {% endif %}
               <h3>{% if session['user_type'] == 1 %}
                 <a href="/admin">Access to Admin Panel</a>
@@ -96,7 +105,7 @@
                 {% endif %}
               </h3>
               <a href="/logout"><button class="btn btn-danger">
-             logout
+             Logout
             </button></a>
           </div>
       </div>

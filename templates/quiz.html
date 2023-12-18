@@ -45,6 +45,11 @@
                   <strong
                     >Question {{loop.index}}/5: {{question.question}}</strong
                   ><br />
+
+                  {% if question.image_path %}
+                      <img src="/{{ question.image_path}}" alt="Uploaded Image" width="350">
+                  {% endif %}
+                  <br />
                   <label>
                     <input
                       type="radio"
@@ -89,7 +94,7 @@
                 <div class="card-body">
                   <p>
                     Note: Ensure that you manage your time wisely as the total
-                    time for the quiz is 3 minutes.
+                    time for the quiz is 1:30 minutes.
 
                     <strong>Good luck!</strong>
                   </p>

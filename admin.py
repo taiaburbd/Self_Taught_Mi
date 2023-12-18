@@ -9,6 +9,11 @@ import os
 import nibabel as nib
 import matplotlib.pyplot as plt
 
+UPLOAD_FOLDER = 'static/uploads/questions'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 def is_admin():
     return session.get('user_type')
@@ -138,7 +143,6 @@ def delete_tutorial(tutorial_id):
         flash(f'Try agian: {str(e)}','error')
         return redirect(url_for('list_tutorials'))
 
-    return redirect(url_for('list_tutorials'))
 
 
 #Question area start
@@ -174,6 +178,33 @@ def question_upload():
             flash(f'Try agian: {str(e)}','error')
             return redirect(url_for('list_questions'))
     
+@app.route('/upload_questions', methods=['POST'])
+def upload_questions_file():
+    if 'file' not in request.files:
+        return redirect(request.url)
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return redirect(request.url)
+
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file.save(filename)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    question_id = request.form['question_id']
+    print(question_id)
+    sql = "UPDATE questions SET image_path = ? WHERE id = ?"
+    cursor.execute(sql, (filename,question_id,))
+    conn.commit()  # Commit the changes to the database
+
+    conn.close()
+
+    flash(f'Data successfully deleted','success')
+    return redirect(url_for('list_questions'))
+
 # Read operation (list all tutorials)
 @app.route('/questions/list')
 def list_questions():

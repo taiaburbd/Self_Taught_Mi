@@ -268,8 +268,13 @@ def profile():
     else:
         return redirect(url_for('login'))
 
+def is_admin():
+    return session.get('user_type')
+
 @app.route('/leaderboard')
 def leaderboard():
+    if not is_admin():
+        return redirect(url_for('hello'))
     if 'user_id' in session:
         conn = get_db_connection()
         category_cursor = conn.execute('SELECT category_id FROM tutorials GROUP BY category_id ')

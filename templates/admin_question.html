@@ -48,7 +48,7 @@
                 <th>Options</th>
                 <th>Answer</th>
                 <th>Created At</th>
-                <th>Created By</th>
+                <th>Image</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -66,8 +66,18 @@
                     {{ question.option4 }}<br>
                 </td>
                 <td>{{ question.answer }}</td>
-                <td>{{ question.created_at }}</td>
-                <td>{{ question.created_by }}</td>
+                <td>
+                    {{ question.created_at }}</td>
+                <td>
+                    <img src="/{{question.image_path}}" alt="Uploaded Image" width="250">
+
+                    <form action="/upload_questions" method="post" enctype="multipart/form-data">
+                        <input type="hidden" value="{{question.id}}" name="question_id">
+                        <label>Upload Image <em>.png, .jpg, .jpeg, .gif</em></label>
+                        <input type="file" name="file" accept=".png, .jpg, .jpeg, .gif" required>
+                        <input type="submit" class="btn btn-info" value="Upload">
+                    </form>
+                </td>
                 <td>
                     <a href="/question/delete/{{ question.id }}" onClick="confirm('Delete entry?')">
                         <button class="btn btn-danger">Delete</button>

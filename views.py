@@ -82,7 +82,7 @@ def test_mi(name):
 #         return redirect(url_for('hello'))
 
 def calculate_remaining_time(pre_time,lev_time):
-    cur_time = 120 - int(lev_time)
+    cur_time = 90 - int(lev_time)
     return pre_time + cur_time
 
 @app.route('/quiz',methods=['GET', 'POST'])

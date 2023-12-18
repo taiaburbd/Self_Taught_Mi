@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>Sl.</th>
+                <th>Quiz Time</th>
                 <th>Name</th>
                 <th>Score</th>
                 <th>Session Time</th>
@@ -22,9 +23,8 @@
                 <td>
                     {{ loop.index }}
                 </td>
-                <td>
-                    {{ item.fullname }}
-                </td>
+                <td>{{ item.created_date }}</td>
+                <td>{{ item.fullname }}</td>
                 <td>{{ item.total_mark }}</td>
                 <td>{{ item.category }}</td>
                 <td>

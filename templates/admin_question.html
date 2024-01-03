@@ -69,8 +69,9 @@
                 <td>
                     {{ question.created_at }}</td>
                 <td>
-                    <img src="/{{question.image_path}}" alt="Uploaded Image" width="250">
-
+                    {% if question.image_path %}
+                        <img src="/{{question.image_path}}" alt="Uploaded Image" width="250">
+                    {% endif %}
                     <form action="/upload_questions" method="post" enctype="multipart/form-data">
                         <input type="hidden" value="{{question.id}}" name="question_id">
                         <label>Upload Image <em>.png, .jpg, .jpeg, .gif</em></label>

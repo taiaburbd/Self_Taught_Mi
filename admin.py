@@ -256,14 +256,21 @@ def save_slices_as_png(nifti_file_path):
     name = os.path.splitext(nifti_file_path)[0]
     png_file_name = png_folder + name
 
-    # Save each slice as a PNG file
-    for i in range(data.shape[-1]):
-        slice_data = data[:, :, i]
-        plt.title(f'slice_{i}')
-        plt.imshow(slice_data, cmap='gray')
-        plt.axis('off')
-        plt.savefig(f'{png_file_name}.png')
-        plt.clf()
+    print(data.shape[2]//2)
+    slice_data = data[:, :, data.shape[2]//2]
+    plt.title(f'slice_{data.shape[2]//2}')
+    plt.imshow(slice_data, cmap='gray')
+    plt.axis('off')
+    plt.savefig(f'{png_file_name}.png')
+    plt.clf()
+    # # Save each slice as a PNG file
+    # for i in range(data.shape[-1]):
+    #     slice_data = data[:, :, data.shape[2]//2]
+    #     plt.title(f'slice_{data.shape[2]//2}')
+    #     plt.imshow(slice_data, cmap='gray')
+    #     plt.axis('off')
+    #     plt.savefig(f'{png_file_name}.png')
+    #     plt.clf()
 
 
 @app.route('/images_upload', methods=['POST'])

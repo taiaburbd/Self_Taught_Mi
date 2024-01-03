@@ -13,7 +13,14 @@
 
                 <iframe src="{{ coronal_plot }}" width="100%" height="800px"></iframe>
             </div>
+            <form method="get" action="/view_imgd">
+                <label for="slice_n">Slice Number:</label>
+                <input type="hidden" id="image_id" name="image_id" value="{{image_id}}">
 
+                <input type="text" id="slice_n" name="slice_n" required>
+                
+                <button type="submit">Submit</button>
+            </form>
         </div>
     </section>
 

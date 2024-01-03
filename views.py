@@ -4,16 +4,16 @@
 import datetime
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_mail import Mail, Message
+# from flask_mail import Mail, Message
 from app import app
 import secrets
 import os
 import plotly.express as px
 import nibabel as nib
-import numpy as np
+# import numpy as np
 
 
-mail = Mail(app)
+# mail = Mail(app)
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -115,14 +115,15 @@ def quiz():
 
     if request.method == 'POST':
         lev_time = request.form["remaining_time"]
-        print(lev_time)
-        print(session['quiz_time'])
+        print(level)
+        print(question_lev)
         session['quiz_time'] = calculate_remaining_time(session['quiz_time'], lev_time)
-        print(session['quiz_time'])
 
         if int(level)  != 1:
             question_lev = int(level)  - 1; 
             question_lev_title = make_level_title(question_lev)
+        
+        print(question_lev)
 
         lev_questions = conn.execute('SELECT * FROM questions WHERE level=? ORDER BY question',(question_lev_title,))
         lev_questions = lev_questions.fetchall()
@@ -136,8 +137,7 @@ def quiz():
             cursor.execute('INSERT INTO user_answers (quiz_id, user_id, question_id, user_answer, mark_count) VALUES (?, ?, ?, ?, ?)', (session['quiz_id'], session['user_id'],q_id,user_answer,mark_count))
             conn.commit()
             
-            
-        if int(level) == 5:
+        if int(question_lev) == 5:
             session['quiz_time'] = calculate_remaining_time(session['quiz_time'], lev_time)
             quizid=session['quiz_id']
             result= conn.execute('SELECT sum(mark_count) as total_mark FROM user_answers WHERE quiz_id=? and user_id=?',(quizid,session['user_id'],))
@@ -328,10 +328,10 @@ def logout():
 
 
 # helper function
-def send_welcome_email(username, email):
-    msg = Message('Thank you for registering [STMi]', sender='maia@st-mi.diqcare.com', recipients=[email])
-    msg.html = render_template('email_registration.html', username=username)
-    mail.send(msg)
+# def send_welcome_email(username, email):
+#     msg = Message('Thank you for registering [STMi]', sender='maia@st-mi.diqcare.com', recipients=[email])
+#     msg.html = render_template('email_registration.html', username=username)
+#     mail.send(msg)
 
 # Logging user check
 def get_login_user():
@@ -349,14 +349,14 @@ def load_nii(filepath):
 
 import tempfile
 import plotly.graph_objs as go
-def plot_slices(nii_data, plane):
+def plot_slices(nii_data, plane,slice):
     if plane == "Axial":
-        fig = px.imshow(nii_data[:, :, nii_data.shape[2]//2].T, color_continuous_scale='gray')
+        fig = px.imshow(nii_data[:, :, slice].T, color_continuous_scale='gray')
     elif plane == "Sagittal":
-        fig = px.imshow(nii_data[:, nii_data.shape[1]//2, :].T, color_continuous_scale='gray')
+        fig = px.imshow(nii_data[:, slice, :].T, color_continuous_scale='gray')
 
     elif plane == "Coronal":
-        fig = px.imshow(nii_data[nii_data.shape[0]//2, :, :].T, color_continuous_scale='gray')
+        fig = px.imshow(nii_data[slice, :, :].T, color_continuous_scale='gray')
     
     fig.update_layout(title=f"{plane} Plane")
     fig.update_xaxes(title_text="Coronal")
@@ -373,6 +373,7 @@ def plot_slices(nii_data, plane):
 @app.route('/view_imgd')
 def img_view():
     image_id = request.args.get('image_id')
+    slice_n = request.args.get('slice_n')
     path = app.static_folder + "/uploads/"
     nii_file_path = str(path) + str(image_id)
     
@@ -400,9 +401,12 @@ def img_view():
     # return render_template('view3d.html', axial_plot=axial_html_path, sagittal_plot=sagittal_html_path, coronal_plot=coronal_html_path, combined_plot=combined_html_path)
     # Create and save axial, sagittal, and coronal plots
     # Create and save axial, sagittal, and coronal plots
-    axial_plot = plot_slices(nii_data, "Axial")
-    sagittal_plot = plot_slices(nii_data, "Sagittal")
-    coronal_plot = plot_slices(nii_data, "Coronal")
+    if not slice_n:  # Check if slice_ni is None or an empty container
+        slice_n = nii_data.shape[2] // 2
+
+    axial_plot = plot_slices(nii_data, "Axial",slice_n)
+    sagittal_plot = plot_slices(nii_data, "Sagittal", slice_n)
+    coronal_plot = plot_slices(nii_data, "Coronal", slice_n)
 
 
-    return render_template('view3d.html', axial_plot=axial_plot, sagittal_plot=sagittal_plot, coronal_plot=coronal_plot)
+    return render_template('view3d.html',image_id=image_id, axial_plot=axial_plot, sagittal_plot=sagittal_plot, coronal_plot=coronal_plot)

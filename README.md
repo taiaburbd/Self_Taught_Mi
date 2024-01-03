@@ -16,8 +16,8 @@ Self-Taught Medical Imaging (MI), Web base learning, quiz, and medical image sto
 * git clone https://github.com/taiaburbd/Self_Taught_Mi.git
 
 installation with virtual environment 
-* install: python -m venv venv
-* active virtual env: source .venv/bin/activate
+* Install: python/python3 -m venv venv
+* Active virtual env: source .venv/bin/activate
 * pip install -r requirements.txt   
 * flask run
 

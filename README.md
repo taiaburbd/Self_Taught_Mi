@@ -17,25 +17,13 @@ Information about a web project created using Python, Flask, machine learning, d
 
 
 
-* Programming Language:
-Python 3.*
-
-* Web Framework:
-Flask
-
+* Programming Language: Python 3.*
+* Web Framework: Flask
 * Machine Learning and Deep Learning:
  the project involves machine learning and deep learning. These could be implemented using libraries such as TensorFlow, scikit-learn, or others.
-
-* Font Scripts:
-  Google Font API
-Font Awesome
-
-* JavaScript Libraries:
-jQuery UI 1.11.2
-jQuery 2.1.0
-
-* UI Framework:
-Bootstrap 
+* Font Scripts: Google Font API, Font Awesome
+* JavaScript Libraries: jQuery UI, jQuery
+* UI Framework: Bootstrap 
 
 ## Authors
 Colabolators in the project: 

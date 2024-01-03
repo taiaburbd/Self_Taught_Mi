@@ -4,6 +4,9 @@ Level Up: Self-Taught Medical Imaging (mi)
 
 Self-Taught Medical Imaging (MI), Web base learning, quiz, and medical image store and visualized system. 
 
+![ST-MI Mainpage](https://github.com/taiaburbd/Self_Taught_Mi/blob/main/Screenshot%202024-01-03%20at%2012.37.26.png)
+
+
 ## Installation step
 
 * git clone https://github.com/taiaburbd/Self_Taught_Mi.git

@@ -13,7 +13,7 @@ installation with virtual environment
 
 
 ## Technologies
-Information about a web project created using Python, Flask, machine learning, deep learning, and various frontend technologies. Here's a breakdown of the components and libraries you mentioned:
+Information about a web project created using Python, Flask, machine learning, deep learning, and various frontend technologies. Here's a breakdown of the components and libraries :
 
 
 
@@ -24,8 +24,7 @@ Python 3.*
 Flask
 
 * Machine Learning and Deep Learning:
-
-You mentioned that the project involves machine learning and deep learning. These could be implemented using libraries such as TensorFlow, scikit-learn, or others.
+ the project involves machine learning and deep learning. These could be implemented using libraries such as TensorFlow, scikit-learn, or others.
 
 * Font Scripts:
   Google Font API
